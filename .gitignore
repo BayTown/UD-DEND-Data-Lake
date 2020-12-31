@@ -1,0 +1,5 @@
+# Exclude .vscode
+.vscode/
+
+# Exclude misc
+dl.cfg
