@@ -49,17 +49,43 @@ And below is an example of what the data in a log file, 2018-11-12-events.json, 
 Here you have an overview of the schemes of the tables:
 ![db_schema](https://user-images.githubusercontent.com/32474126/103841914-f1f9e480-5094-11eb-9ec7-e83f8ac67670.png)
 
+
 ## ETL pipeline
 Here is an illustration of the ETL pipeline:  
+![ELT](https://user-images.githubusercontent.com/32474126/104073654-8a67a480-520e-11eb-9df4-7e8e316b2a6b.png)
 
-![ETL](https://user-images.githubusercontent.com/32474126/103842103-66cd1e80-5095-11eb-9c81-f302c2b63922.png)
+
+## AWS EMR Environment
+I'am using an AWS EMR Cluster with the following configurations:
+```
+Release label: emr-5.29.0
+Hadoop distribution: Amazon 2.8.5
+Applications: Hive 2.3.6, Pig 0.17.0, Hue 4.4.0, JupyterHub 1.0.0, Spark 2.4.4, Livy 0.6.0
+Hardware (Spot Instances):  
+- Master - m5.xlarge
+- CORE - m5.xlarge
+- TASK - m5.xlarge
+Configurations:  
+[
+  {
+     "Classification": "spark-env",
+     "Configurations": [
+       {
+         "Classification": "export",
+         "Properties": { "PYSPARK_PYTHON": "/usr/bin/python3" }
+       }
+    ]
+  }
+]
+```
+
 
 ## How to run the scripts
 - First you have to enter your AWS IAM user credentials in the file `dl.cfg`.
-- Second, you must set the `OUTPUT_PATH` in the file `dl.cfg`. This path specifies where the parquet files are saved.
+- Second, you must set the `OUTPUT_PATH` in the file `dl.cfg`. This path specifies where the parquet files are saved. This should be a S3 bucket 
 - If you have a spark cluster running on AWS EMR, you can run the script as follows:
     ```bash
-    pyspark etl.py
+    spark-submit etl.py
     ```
 
 
@@ -69,6 +95,15 @@ Here is an illustration of the ETL pipeline:
 - `dwh_example.cfg`
   - Here I have provided an example of the necessary config file. This file contains a few explanations. If this file is filled with credentials, it should not be shared under any circumstances.
 - `tools.py`
-  - Contains functions which are useful for etl.py, eg. read_config and print_status
+  - Contains functions which are useful for `etl.py`, eg. read_config and print_status
+
+### Additional information to `etl.py`
+To accelerate the writing process of the parquet files to S3 you can try out the following additional config statements when creating the SparkSession:
+```python
+.config('mapreduce.fileoutputcommitter.algorithm.version', '2')
+.config('spark.sql.parquet.fs.optimized.committer.optimization-enabled', 'true')
+```
+That accelerated the process of writing the parquet files to S3 by 3x.
 
 ## Project summary  
+First of all, I thought about the scheme of the tables and then presented them graphically. Then I built a logger in the form of `print_status` so that I could see how far the program progress will be later. Then I built the ETL pipeline in the function `process_song_data` to read the json data from the `song_data` folder, process it and then save it as a parquet file in S3. This is how I proceeded with the json files that are contained under `log_data`. I realized this in the function `process_log_data`. The testing of my individual steps was done in an EMR notebook. The final productive test took place by executing the `etl.py` directly on the Spark cluster on AWS EMR.

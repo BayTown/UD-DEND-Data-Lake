@@ -3,3 +3,4 @@
 
 # Exclude misc
 dl.cfg
+__pycache__

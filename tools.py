@@ -16,9 +16,9 @@ def read_config(config_path):
     config = configparser.ConfigParser()
     config.read(config_path)
 
-    os.environ['AWS_ACCESS_KEY_ID']=config['AWS_ACCESS_KEY_ID']
-    os.environ['AWS_SECRET_ACCESS_KEY']=config['AWS_SECRET_ACCESS_KEY'] 
-    output_path = config['OUTPUT_PATH']
+    os.environ['AWS_ACCESS_KEY_ID']=config['AWS']['AWS_ACCESS_KEY_ID']
+    os.environ['AWS_SECRET_ACCESS_KEY']=config['AWS']['AWS_SECRET_ACCESS_KEY'] 
+    output_path = config['OUT']['OUTPUT_PATH']
 
     return output_path
 
@@ -34,5 +34,5 @@ def print_status(module_name, message):
     Returns:
         None
     """
-    datetimenow = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print("{} - {} - {}".format(datetimenow, module_name, message))
+    datetimenow = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    print('{} - {} - {}'.format(datetimenow, module_name, message))
