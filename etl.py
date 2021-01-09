@@ -56,7 +56,7 @@ def process_song_data(spark, input_data, output_data):
     
     # write songs table to parquet files partitioned by year and artist
     songs_table_outpath = os.path.join(output_data, 'song_table.parquet')
-    songs_table.write.partitionBy('year','artist_id').parquet(songs_table_outpath)
+    songs_table.write.partitionBy('year','artist_id').parquet(songs_table_outpath, 'overwrite')
     print_status('process_song_data', 'songs_table written to S3')
 
     # extract columns to create artists table
@@ -65,7 +65,7 @@ def process_song_data(spark, input_data, output_data):
 
     # write artists table to parquet files
     artists_table_outpath = os.path.join(output_data, 'artists_table.parquet')
-    artists_table.write.parquet(artists_table_outpath)
+    artists_table.write.parquet(artists_table_outpath, 'overwrite')
     print_status('process_song_data', 'artists_table written to S3')
 
     # Create a view and cache this DataFrame to be able to access to this later
@@ -106,7 +106,7 @@ def process_log_data(spark, input_data, output_data):
 
     # write users table to parquet files
     users_table_outpath = os.path.join(output_data, 'users_table.parquet')
-    users_table.write.parquet(users_table_outpath)
+    users_table.write.parquet(users_table_outpath, 'overwrite')
     print_status('process_log_data', 'users_table written to S3')
 
     # create timestamp column from original timestamp column
@@ -130,7 +130,7 @@ def process_log_data(spark, input_data, output_data):
 
     # write time table to parquet files partitioned by year and month
     time_table_outpath = os.path.join(output_data, 'time_table.parquet')
-    time_table.write.partitionBy('year','month').parquet(time_table_outpath)
+    time_table.write.partitionBy('year','month').parquet(time_table_outpath, 'overwrite')
     print_status('process_log_data', 'time_table written to S3')
 
     # read in song data to use for songplays table
@@ -150,7 +150,7 @@ def process_log_data(spark, input_data, output_data):
 
     # write songplays table to parquet files
     songplays_table_outpath = os.path.join(output_data, 'songplays_table.parquet')
-    songplays_table.write.parquet(songplays_table_outpath)
+    songplays_table.write.parquet(songplays_table_outpath, 'overwrite')
 
 
 def main():
